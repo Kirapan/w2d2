@@ -37,14 +37,33 @@ app.get('/urls/new', (req, res) => {
   res.render('urls_new');
 });
 
+function generateRandomString() {
+   let short = " ";
+   let set = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQESTUVWXYZ0123456789";
+   for( let i=0; i < 6; i++ )
+    short += set.charAt(Math.floor(Math.random() * set.length));
+    return short;
+}
+//console.log(generateRandomString('www.example.com/sdfs/sdfsedsf/sdfs'));
+app.post("/urls", (req, res) => {
+  //console.log(req.body);
+  urlDatabase[generateRandomString()] = req.body.longURL;
+  res.redirect('/urls');
+});
+
+app.get('/u/:shortURL', (req, res) => {
+  if (urlDatabase[req.params.shortURL] === undefined) {
+    res.status(404)
+   .send('Not found');
+  } else {
+  let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+  }
+});
+
 app.get("/urls/:id", (req, res) => {
   let shURL = { shortURL: req.params.id };
   res.render("urls_show", shURL);
-});
-
-app.post("/urls", (req, res) => {
-  console.log(req.body);
-  res.redirect('/urls');
 });
 
 app.listen(PORT, () => {
